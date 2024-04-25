@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class GadgetShop {
-
+    // Ui class for all the UI and it's Logic implementation
     static class ShopUi extends JFrame {
         ArrayList<Gadget> gadgets = new ArrayList<>();
-
+        // interface for callback function when text is change in common or some specific text fields
         interface OnTextChangedCallBack {
             void onTextChanged(String value);
         }
-
+        // specific fields and labels for GUI components
         JTextField creditsField = new JTextField();
         JTextField memoryField = new JTextField();
         JTextField phoneNumber = new JTextField();
@@ -47,7 +47,7 @@ public class GadgetShop {
         float downloadMemoryVal;
         int displayNumberVal = -1;
         float deleteMemoryVal = 0;
-
+        // function to create common text field for better code reusability which also receives an interfaces as a parameter to notify when text is change
         public JPanel CMTextField(JLabel jL, JTextField field, OnTextChangedCallBack textChanged) {
             JPanel jP = new JPanel();
             jP.setLayout(new BoxLayout(jP, BoxLayout.Y_AXIS));
@@ -57,13 +57,13 @@ public class GadgetShop {
             tF = Objects.requireNonNullElseGet(field, JTextField::new);
             tF.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
-                public void insertUpdate(DocumentEvent e) {
+                public void insertUpdate(DocumentEvent e) { // call when text is added
                     textChanged.onTextChanged(tF.getText());
 
                 }
 
                 @Override
-                public void removeUpdate(DocumentEvent e) {
+                public void removeUpdate(DocumentEvent e) { // called when text is removed
                     textChanged.onTextChanged(tF.getText());
 
                 }
@@ -77,7 +77,7 @@ public class GadgetShop {
             jP.add(tF);
             return jP;
         }
-
+        // set the visibility of components to invisible or visible based on which gadget is selected eg . MP3 or Mobile
         private void showReleventFeilds(boolean isMobile) {
             if (isMobile) {
                 memoryField.setVisible(false);
@@ -118,7 +118,7 @@ public class GadgetShop {
             }
         }
 
-        public ShopUi() {
+        public ShopUi() { // constructor of the UI class
             setTitle("Product Details");
             setSize(1000, 350);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -142,11 +142,11 @@ public class GadgetShop {
             textFieldPanel.setLayout(new BoxLayout(textFieldPanel, BoxLayout.X_AXIS));
             textFieldPanel.add(CMTextField(new JLabel("Display Number"), null, e -> {
                 try {
-                    if (!e.trim().isEmpty()) {
+                    if (!e.trim().isEmpty()) { // if text is not empty then parse it to int
                         displayNumberVal = Integer.parseInt(e);
                         displayNumberVal -= 1;
                     }
-                } catch (NumberFormatException ex) {
+                } catch (NumberFormatException ex) { // if exception is thrown show relevant error message
                     JOptionPane.showMessageDialog(mainPanel, "Invalid Display Number");
                 }
             }));
@@ -164,21 +164,21 @@ public class GadgetShop {
             commonFields.add(CMTextField(new JLabel("Modal: "), null, e -> modelVal = e));
             commonFields.add(CMTextField(new JLabel("Price: "), null, e -> {
                 try {
-                    if (!e.trim().isEmpty()) {
+                    if (!e.trim().isEmpty()) {// check if not empty then parse it to double
                         priceVal = Double.parseDouble(e);
                     }
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(mainPanel, "Invalid Value for Price");
+                    JOptionPane.showMessageDialog(mainPanel, "Invalid Value for Price"); // show error if parsing to double was unsuccessful for example user entered characters instead of digits
                 }
             }));
             commonFields.add(CMTextField(new JLabel("Weight: "), null, e -> {
                 try {
-                    if (!e.trim().isEmpty()) {
+                    if (!e.trim().isEmpty()) {  // same here not empty parse it
                         weightVal = Integer.parseInt(e);
                     }
 
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(mainPanel, "Invalid Value for Weight");
+                    JOptionPane.showMessageDialog(mainPanel, "Invalid Value for Weight"); // show error if parse unsuccessful
 
                 }
             }));
@@ -231,26 +231,25 @@ public class GadgetShop {
             addButtonsPanel.add(addMobileBtn);
             addButtonsPanel.add(addMp3Btn);
             mainPanel.add(addButtonsPanel);
-            addMobileBtn.addActionListener(e -> {
-                if (!modelVal.isEmpty() && !sizeVal.isEmpty() && callingCreditsVal > 0) {
+            addMobileBtn.addActionListener(e -> { // action on button click to add a mobile in gadgets array list
+                if (!modelVal.isEmpty() && !sizeVal.isEmpty() && callingCreditsVal > 0) { // check if necessary fields are not empty
                     Mobile mobile = new Mobile(modelVal, sizeVal, priceVal, weightVal, callingCreditsVal);
-                    gadgets.add(mobile);
-                    logs.setText(logs.getText() + '\n' + "Mobile Added");
+                    gadgets.add(mobile); // add it to the array list
+                    logs.setText(logs.getText() + '\n' + "Mobile Added"); // show the log in log window
                 } else {
-                    JOptionPane.showMessageDialog(mainPanel, "Input Modal Value, Credits Value  And Size value");
+                    JOptionPane.showMessageDialog(mainPanel, "Input Modal Value, Credits Value  And Size value"); // if anything is missing show error
                 }
             });
-            addMp3Btn.addActionListener(e -> {
+            addMp3Btn.addActionListener(e -> { // action on button to add MP3
                 MP3 mp3 = new MP3(memoryVal, modelVal, sizeVal, priceVal, weightVal);
-                if (!modelVal.isEmpty() && !sizeVal.isEmpty() && memoryVal > 0) {
-                    gadgets.add(mp3);
+                if (!modelVal.isEmpty() && !sizeVal.isEmpty() && memoryVal > 0) { // check for values integrity
+                    gadgets.add(mp3); // add the mp3 in array list
                     logs.setText(logs.getText() + '\n' + "MP3 Added");
                 } else {
-                    JOptionPane.showMessageDialog(mainPanel, "Input Modal Value, Memory Value And Size value");
+                    JOptionPane.showMessageDialog(mainPanel, "Input Modal Value, Memory Value And Size value"); // show error MessageBox
                 }
 
 
-//                Mobile mobile = new Mobile();
             });
             // end add buttons panel
 
@@ -293,53 +292,53 @@ public class GadgetShop {
             actionButtonsButton.add(makeCallButton);
             actionButtonsButton.add(downloadButton);
             actionButtonsButton.add(deleteMusicButton);
-            makeCallButton.addActionListener(e -> {
+            makeCallButton.addActionListener(e -> { // make call button click function
                 try {
-                    if (mDurationVal > 0 && !phoneNumberVal.isEmpty()) {
-                        Mobile mobile = (Mobile) gadgets.get(displayNumberVal);
-                        boolean isCallMde = mobile.makeCall(mDurationVal, phoneNumberVal);
+                    if (mDurationVal > 0 && !phoneNumberVal.isEmpty()) { // check if valid phone number and duration is entered
+                        Mobile mobile = (Mobile) gadgets.get(displayNumberVal); // get the mobile gadget from gadget list and cast it to mobile
+                        boolean isCallMde = mobile.makeCall(mDurationVal, phoneNumberVal); // make the call by calling the makeCallfunction
                         if (isCallMde)
-                            logs.setText(logs.getText() + '\n' + "Call has been made");
+                            logs.setText(logs.getText() + '\n' + "Call has been made"); // if call is made update the log
                         else
-                            logs.setText(logs.getText() + '\n' + "Not enough Balance");
+                            logs.setText(logs.getText() + '\n' + "Not enough Balance"); // if not show not enough balance error in log
 
                     } else {
-                        JOptionPane.showMessageDialog(mainPanel, "Please Input Duration and Phone Number");
+                        JOptionPane.showMessageDialog(mainPanel, "Please Input Duration and Phone Number"); // if duration or phone number is invalid show error message box
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(mainPanel, "The selected Gadget is not mobile or it's not available in database");
+                    JOptionPane.showMessageDialog(mainPanel, "The selected Gadget is not mobile or it's not available in database"); // if selected device or display number of the gadget is not mobile then show the error, or it does not exists
                 }
             });
-            downloadButton.addActionListener(e -> {
+            downloadButton.addActionListener(e -> { // download the music button click function
                 try {
-                    if (displayNumberVal != -1) {
-                        if (downloadMemoryVal > 0) {
-                            MP3 mp3 = (MP3) gadgets.get(displayNumberVal);
-                            boolean result = mp3.downloadMusic(downloadMemoryVal);
+                    if (displayNumberVal != -1) { // if display number is not entered show error
+                        if (downloadMemoryVal > 0) { // if download memory value is 0 or less then 0 show error
+                            MP3 mp3 = (MP3) gadgets.get(displayNumberVal); // cast the gadget to MP3
+                            boolean result = mp3.downloadMusic(downloadMemoryVal); // download the music by calling MP3 class downloadMusic function
                             if (result) {
-                                logs.setText(logs.getText() + '\n' + "Music Downloaded");
+                                logs.setText(logs.getText() + '\n' + "Music Downloaded"); // update the log on successfully download
                             } else {
-                                logs.setText(logs.getText() + "\n" + "Music Not Downloaded");
+                                logs.setText(logs.getText() + "\n" + "Music Not Downloaded"); // show error not enough space is there is not enough space to download
                             }
                         }
                     } else {
                         JOptionPane.showMessageDialog(mainPanel, "Input Memory Value for the music to download");
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(mainPanel, "The selected Gadget is not MP3 or it's not available in database");
+                    JOptionPane.showMessageDialog(mainPanel, "The selected Gadget is not MP3 or it's not available in database"); // show cast error if the entered display number is not an MP3 device, or it does not exists
 
                 }
             });
-            deleteMusicButton.addActionListener(e -> {
+            deleteMusicButton.addActionListener(e -> { // delete music function
                 try {
-                    if (displayNumberVal != -1) {
-                        if (deleteMemoryVal > 0) {
-                            MP3 mp3 = (MP3) gadgets.get(displayNumberVal);
-                            boolean result = mp3.deleteMusic(deleteMemoryVal);
+                    if (displayNumberVal != -1) { // check if display number is entered
+                        if (deleteMemoryVal > 0) { // check if deleted value is greater then 0
+                            MP3 mp3 = (MP3) gadgets.get(displayNumberVal); // cast it to MP3
+                            boolean result = mp3.deleteMusic(deleteMemoryVal); // delete the music
                             if (result) {
-                                logs.setText(logs.getText() + '\n' + "Music Deleted");
+                                logs.setText(logs.getText() + '\n' + "Music Deleted"); // show successfully delete log if deleted
                             } else {
-                                logs.setText(logs.getText() + "\n" + "Music Not Deleted");
+                                logs.setText(logs.getText() + "\n" + "Music Not Deleted"); // if the delete memory is more then the available memory then show error in log
                             }
                         } else {
                             JOptionPane.showMessageDialog(mainPanel, "Input Memory Value for the music to delete");
@@ -364,17 +363,17 @@ public class GadgetShop {
             setVisible(true);
         }
 
-        private JButton getjButton() {
+        private JButton getjButton() { // function to get common button for display all action
             JButton displayButton = new JButton("Display All");
             displayButton.addActionListener(e -> {
                 int i = 0;
-                for (Gadget gadget : gadgets) {
+                for (Gadget gadget : gadgets) {  // iterates over the gadgets array list
 
-                    if (gadget instanceof Mobile) {
+                    if (gadget instanceof Mobile) { // check if Mobile then call the mobile display
 
                         logs.setText(logs.getText() + "\n" + "Display Number :" + (i + 1) + '\n' + ((Mobile) gadget).display()+"\n\n");
 
-                    } else if (gadget instanceof MP3) {
+                    } else if (gadget instanceof MP3) { // else call the MP3 Display
                         logs.setText(logs.getText() + "\n" + "Display Number :" + (i + 1) + '\n' + ((MP3) gadget).display()+"\n\n");
 
                     }
@@ -384,20 +383,20 @@ public class GadgetShop {
             return displayButton;
         }
 
-        private void clearTextComponents(Container container) {
+        private void clearTextComponents(Container container) { // clear all the text filed and logs  by iterating over parent component
             for (Component c : container.getComponents()) {
-                if (c instanceof JTextField) {
+                if (c instanceof JTextField) { // check if any component is JTextField clear it's text
                     ((JTextField) c).setText("");
-                } else if (c instanceof JTextArea) {
+                } else if (c instanceof JTextArea) { // same for Text Area
 
                     ((JTextArea)c).setText("");
-                } else if (c instanceof Container) {
+                } else if (c instanceof Container) { // if it's a Container component then make the recursive call to go inside it and check if there is any JTextField in it and clear it
                     clearTextComponents((Container) c);
                 }
             }
         }
     }
-
+    // main function for main class GadgetShop is main class
     public static void main(String[] args) {
         new ShopUi();
     }
